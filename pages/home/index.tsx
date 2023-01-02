@@ -1,31 +1,39 @@
-import { InferGetStaticPropsType } from "next";
-import { stringify } from "querystring";
-import { wrapper } from "../../store";
-
 // Icons
-import {
-  InfoCircleOutlined,
-  UpCircleFilled,
-  UpCircleOutlined,
-} from "@ant-design/icons";
+import { InfoCircleOutlined, UpCircleOutlined } from "@ant-design/icons";
 
 // React
-import react, { useEffect, useState } from "react";
-import { Divider, Spin } from "antd";
+import { useEffect, useState } from "react";
+import { Divider } from "antd";
 import MyLoader from "../../components/loader/MyLoader";
+import HomePageTabs from "../../components/tabs/HomePageTabs";
+
+// Redux
+import type { AppState } from "../../store";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setWeekData,
+  setTimelineData,
+  setProvincesData,
+  setSelectedWeekRange,
+} from "../../slices/covidDataSlice";
 
 const HomePage: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [weekData, setWeekData] = useState<any[]>([]);
-  const [timelineData, setTimelineData] = useState<any[]>([]);
-  const [probincesData, setProvincesData] = useState<any[]>([]);
+  const [isLoading, _setIsLoading] = useState<boolean>(true);
+  const [weekData, _setWeekData] = useState<any[]>([]);
+  const [timelineData, _setTimelineData] = useState<any[]>([]);
+  const [probincesData, _setProvincesData] = useState<any[]>([]);
+
+  // Redux
+  const dispatch = useDispatch();
+  const prevWeekData = useSelector((state: AppState) => state.covidData.weekData);
+  const prevTimelineData = useSelector((state: AppState) => state.covidData.timelineData);
+  const prevProvincesData = useSelector((state: AppState) => state.covidData.provincesData);
 
   useEffect(() => {
     async function getData() {
       console.log("Getting Data...");
 
-      const REQUEST_WEEK_DATA_URL =
-        "https://covid19.ddc.moph.go.th/api/Cases/today-cases-all";
+      const REQUEST_WEEK_DATA_URL = "https://covid19.ddc.moph.go.th/api/Cases/today-cases-all";
       const REQUEST_TIMELINE_DATA_URL =
         "https://covid19.ddc.moph.go.th/api/Cases/timeline-cases-all";
       const REQUEST_PROVINCES_DATA =
@@ -39,19 +47,30 @@ const HomePage: React.FC = () => {
       const timelineDataResponse = timelineDataRequest.json();
       const provincesDataResponse = provincesDataRequest.json();
 
-      Promise.all([
-        weekDataResponse,
-        timelineDataResponse,
-        provincesDataResponse,
-      ]).then((res: any[]) => {
-        setWeekData(res[0]);
-        setTimelineData(res[1]);
-        setProvincesData(res[2]);
-        setIsLoading(false);
-      });
+      Promise.all([weekDataResponse, timelineDataResponse, provincesDataResponse]).then(
+        (res: any[]) => {
+          _setWeekData(res[0]);
+          _setTimelineData(res[1]);
+          _setProvincesData(res[2]);
+
+          dispatch(setWeekData(res[0]));
+          dispatch(setTimelineData(res[1]));
+          dispatch(setProvincesData(res[2]));
+
+          _setIsLoading(false);
+        }
+      );
     }
 
-    getData();
+    if (!prevWeekData || !prevTimelineData || !prevProvincesData) {
+      getData();
+      console.log("Get new data");
+    } else {
+      _setWeekData(prevWeekData);
+      _setTimelineData(prevTimelineData);
+      _setProvincesData(prevProvincesData);
+      _setIsLoading(false);
+    }
   }, []);
 
   const formatNumber = (number: number) => {
@@ -70,9 +89,7 @@ const HomePage: React.FC = () => {
 
       <div className="flex mt-2 flex-wrap justify-center gap-2">
         <div className="w-full p-4 bg-red-300 border border-gray-200 rounded-lg shadow-md m-1">
-          <p className="text-lg font-bold">
-            ผู้ป่วยรายใหม่ / สะสม (ประจำสัปดาห์)
-          </p>
+          <p className="text-lg font-bold">ผู้ป่วยรายใหม่ / สะสม (ประจำสัปดาห์)</p>
 
           <div className="flex justify-around">
             <div className="mt-2">
@@ -125,10 +142,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           <p className="text-sm mt-2">
-            สะสม :{" "}
-            <span className="underline">
-              {formatNumber(weekData[0].total_recovered)} คน
-            </span>
+            สะสม : <span className="underline">{formatNumber(weekData[0].total_recovered)} คน</span>
           </p>
         </div>
 
@@ -136,15 +150,10 @@ const HomePage: React.FC = () => {
           <p className=" font-bold">ผู้เสียชีวิตรายใหม่</p>
           <div className="flex items-center gap-2 mt-2 justify-center">
             <UpCircleOutlined style={{ fontSize: "20px" }} />
-            <p className="font-bold text-lg underline">
-              {formatNumber(weekData[0].new_death)} คน
-            </p>
+            <p className="font-bold text-lg underline">{formatNumber(weekData[0].new_death)} คน</p>
           </div>
           <p className="text-sm mt-2">
-            สะสม :{" "}
-            <span className="underline">
-              {formatNumber(weekData[0].total_death)} คน
-            </span>
+            สะสม : <span className="underline">{formatNumber(weekData[0].total_death)} คน</span>
           </p>
         </div>
 
@@ -153,9 +162,7 @@ const HomePage: React.FC = () => {
             <InfoCircleOutlined />
             <p>
               อัพเดทล่าสุด ณ วันที่ :{" "}
-              <span className="font-bold underline">
-                {weekData[0].update_date}
-              </span>
+              <span className="font-bold underline">{weekData[0].update_date}</span>
             </p>
           </div>
           <div className="text-sm mt-1">
@@ -172,19 +179,13 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <div className="p-2 mt-2">
+        <p className="font-bold text-lg">ชาร์ตสถิติข้อมูลย้อนหลังรายสัปดาห์</p>
+        <HomePageTabs />
+      </div>
     </div>
   );
 };
-
-// const REQUEST_URL =
-//   "https://covid19.ddc.moph.go.th/api/Cases/today-cases-all";
-// const response = await fetch(REQUEST_URL);
-// const data = await response.json();
-// return {
-//   props: {
-//     data,
-//   },
-//   revalidate: 30,
-// };
 
 export default HomePage;

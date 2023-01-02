@@ -32,7 +32,4 @@ export const menuSlice = createSlice({
 });
 
 export const { toggleMenu, setSelectedKeys } = menuSlice.actions;
-
 export const selectMenuState = (state: AppState) => state.menu;
-
-export default menuSlice.reducer;

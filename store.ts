@@ -6,7 +6,7 @@ import { createWrapper } from "next-redux-wrapper";
 
 // Slices
 import { menuSlice } from "./slices/menuSlice";
-// import menuReducer from "./slices/menuSlices";
+import { covidDataSlice } from "./slices/covidDataSlice";
 import pagesReducer from "./slices/pageSlice";
 
 const makeStore = () =>
@@ -14,6 +14,7 @@ const makeStore = () =>
     reducer: {
       [menuSlice.name]: menuSlice.reducer,
       page: pagesReducer,
+      [covidDataSlice.name]: covidDataSlice.reducer,
     },
     devTools: true,
   });
@@ -23,11 +24,6 @@ const makeStore = () =>
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type AppState = ReturnType<AppStore["getState"]>;
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  AppState,
-  unknown,
-  Action
->;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>;
 
 export const wrapper = createWrapper<AppStore>(makeStore);

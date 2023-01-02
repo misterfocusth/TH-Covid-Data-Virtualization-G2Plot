@@ -41,10 +41,9 @@ const items: MenuProps["items"] = [
 
 export const CustomMenu: React.FC = () => {
   // Redux
-  const selectedKeys = useSelector(
-    (state: AppState) => state.menu.selectedKeys
-  );
+  const selectedKeys = useSelector((state: AppState) => state.menu.selectedKeys);
   const currentPage = useSelector((state: AppState) => state.page.currentPage);
+
   const dispatch = useDispatch();
 
   const onClick: MenuProps["onClick"] = (e) => {
