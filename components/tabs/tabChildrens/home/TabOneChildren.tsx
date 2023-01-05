@@ -1,12 +1,11 @@
 import dynamic from "next/dynamic";
-import { Bar, Line } from "@antv/g2plot";
-import { Col, InputNumber, Row, Slider } from "antd";
+import { InputNumber, Row, Slider } from "antd";
 import { useEffect, useState } from "react";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 // Redux
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { AppState } from "../../../../store";
 
 // Type
@@ -115,37 +114,35 @@ const TabOneChildren: React.FC = () => {
         </div>
 
         <div className="mt-4">
-          <Chart
-            options={{
-              chart: {
-                id: "basic-bar",
-              },
-              dataLabels: {
-                enabled: false,
-              },
-              stroke: {
-                curve: "smooth",
-              },
-              xaxis: {
-                categories: chartsData.weeknum,
-              },
-            }}
-            series={[
-              {
-                name: "จำนวนผู้ป่วยรายใหม่ (ในประเทศ)",
-                data: chartsData.case_walkin,
-                color: "red",
-              },
-              {
-                name: "จำนวนผู้หายป่วยรายใหม่ (ต่างประเทศ)",
-                data: chartsData.case_foreign,
-                color: "green",
-              },
-            ]}
-            type="area"
-            height={360}
-            width="100%"
-          />
+          <div className="p-2 bg-white border-gray-200 rounded-lg shadow-md border">
+            <p className="font-bold p-2">สถิติผู้ป่วยรายใหม่ย้อนหลัง</p>
+            <Chart
+              options={{
+                chart: {
+                  id: "basic-bar",
+                },
+                dataLabels: {
+                  enabled: false,
+                },
+                stroke: {
+                  curve: "smooth",
+                },
+                xaxis: {
+                  categories: chartsData.weeknum,
+                },
+              }}
+              series={[
+                {
+                  name: "จำนวนผู้ป่วยรายใหม่ (ในประเทศ)",
+                  data: chartsData.case_walkin,
+                  color: "red",
+                },
+              ]}
+              type="area"
+              height={350}
+              width="100%"
+            />
+          </div>
         </div>
       </div>
     </div>

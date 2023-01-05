@@ -17,6 +17,7 @@ import {
   setSelectedWeekRange,
   setTimelineProvincesData,
 } from "../../slices/covidDataSlice";
+import TopNewCaseProvincesTable from "../../components/tables/TopNewCaseProvincesTable";
 
 const HomePage: React.FC = () => {
   const [isLoading, _setIsLoading] = useState<boolean>(true);
@@ -187,6 +188,18 @@ const HomePage: React.FC = () => {
             <p></p>
           </div>
         </div>
+      </div>
+
+      <div className="p-2 mt-2">
+        <p className="font-bold text-lg">
+          จังหวัดในประเทศไทยที่มีผู้ป่วยรายใหม่ / สะสมสูงที่สุด (ประจำสัปดาห์)
+        </p>
+
+        <div className="mt-2 p-4 border border-gray-200 rounded-lg shadow-md">
+          <TopNewCaseProvincesTable />
+        </div>
+
+        <p className="underline mt-4 text-center">กดเพื่อไปหน้าดูข้อมูลแบบแยกตามจังหวัด {">>"}</p>
       </div>
 
       <div className="p-2 mt-2">
