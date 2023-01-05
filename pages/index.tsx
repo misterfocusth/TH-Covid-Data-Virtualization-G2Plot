@@ -25,9 +25,7 @@ function renderSwitch(currentPage: string, data: []) {
   }
 }
 
-export default function Home({
-  data,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Home({ data }: InferGetStaticPropsType<typeof getStaticProps>) {
   const [showMenu, setShowMenu] = useState<boolean>(false);
 
   // Redux
@@ -48,7 +46,7 @@ export default function Home({
         <title>หน้าแรก | Thailand COVID-19 Virtualization</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main className="mb-16">
         <div>
           <Navbar />
           {isOpenMenu ? <CustomMenu /> : <div></div>}
@@ -60,8 +58,7 @@ export default function Home({
 }
 
 export const getStaticProps = wrapper.getStaticProps(() => async () => {
-  const REQUEST_URL =
-    "https://covid19.ddc.moph.go.th/api/Cases/today-cases-all";
+  const REQUEST_URL = "https://covid19.ddc.moph.go.th/api/Cases/today-cases-all";
   const response = await fetch(REQUEST_URL);
   const data = await response.json();
 

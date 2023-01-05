@@ -15,6 +15,7 @@ import {
   setTimelineData,
   setProvincesData,
   setSelectedWeekRange,
+  setTimelineProvincesData,
 } from "../../slices/covidDataSlice";
 
 const HomePage: React.FC = () => {
@@ -36,30 +37,38 @@ const HomePage: React.FC = () => {
       const REQUEST_WEEK_DATA_URL = "https://covid19.ddc.moph.go.th/api/Cases/today-cases-all";
       const REQUEST_TIMELINE_DATA_URL =
         "https://covid19.ddc.moph.go.th/api/Cases/timeline-cases-all";
+      const REQUEST_TIMELINE_PROVINCES_DATA =
+        "https://covid19.ddc.moph.go.th/api/Cases/timeline-cases-by-provinces";
       const REQUEST_PROVINCES_DATA =
         "https://covid19.ddc.moph.go.th/api/Cases/today-cases-by-provinces";
 
       const weekDataRequest = await fetch(REQUEST_WEEK_DATA_URL);
       const timelineDataRequest = await fetch(REQUEST_TIMELINE_DATA_URL);
+      const timelineProvincesDataRequest = await fetch(REQUEST_TIMELINE_PROVINCES_DATA);
       const provincesDataRequest = await fetch(REQUEST_PROVINCES_DATA);
 
       const weekDataResponse = weekDataRequest.json();
       const timelineDataResponse = timelineDataRequest.json();
+      const timelineProvincesDataResponse = timelineProvincesDataRequest.json();
       const provincesDataResponse = provincesDataRequest.json();
 
-      Promise.all([weekDataResponse, timelineDataResponse, provincesDataResponse]).then(
-        (res: any[]) => {
-          _setWeekData(res[0]);
-          _setTimelineData(res[1]);
-          _setProvincesData(res[2]);
+      Promise.all([
+        weekDataResponse,
+        timelineDataResponse,
+        timelineProvincesDataResponse,
+        provincesDataResponse,
+      ]).then((res: any[]) => {
+        _setWeekData(res[0]);
+        _setTimelineData(res[1]);
+        _setProvincesData(res[2]);
 
-          dispatch(setWeekData(res[0]));
-          dispatch(setTimelineData(res[1]));
-          dispatch(setProvincesData(res[2]));
+        dispatch(setWeekData(res[0]));
+        dispatch(setTimelineData(res[1]));
+        dispatch(setTimelineProvincesData(res[2]));
+        dispatch(setProvincesData(res[3]));
 
-          _setIsLoading(false);
-        }
-      );
+        _setIsLoading(false);
+      });
     }
 
     if (!prevWeekData || !prevTimelineData || !prevProvincesData) {

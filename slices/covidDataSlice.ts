@@ -10,6 +10,7 @@ import { AppState, AppStore } from "../store";
 interface CovidData {
   weekData: any[] | null;
   timelineData: any[] | null;
+  timelineProvincesData: any[] | null;
   provincesData: any[] | null;
   selectedWeekRange: number | null;
 }
@@ -17,6 +18,7 @@ interface CovidData {
 const initialState: CovidData = {
   weekData: null,
   timelineData: null,
+  timelineProvincesData: null,
   provincesData: null,
   selectedWeekRange: 3, // 4 Week (Initial Value)
 };
@@ -37,6 +39,9 @@ export const covidDataSlice = createSlice({
     setTimelineData: (state, action: PayloadAction<any[]>) => {
       state.timelineData = action.payload;
     },
+    setTimelineProvincesData: (state, action: PayloadAction<any[]>) => {
+      state.timelineProvincesData = action.payload;
+    },
     setProvincesData: (state, action: PayloadAction<any[]>) => {
       state.provincesData = action.payload;
     },
@@ -46,6 +51,11 @@ export const covidDataSlice = createSlice({
   },
 });
 
-export const { setWeekData, setTimelineData, setProvincesData, setSelectedWeekRange } =
-  covidDataSlice.actions;
+export const {
+  setWeekData,
+  setTimelineData,
+  setTimelineProvincesData,
+  setProvincesData,
+  setSelectedWeekRange,
+} = covidDataSlice.actions;
 export const selectCovidDataState = (state: AppState) => state.covidData;

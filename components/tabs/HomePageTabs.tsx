@@ -14,7 +14,7 @@ const HomePageTabs: React.FC = () => (
       {
         label: `ข้อมูลย้อนหลังทั้งหมด`,
         key: "1",
-        children: <TabOneChildren data={[]} />,
+        children: <TabOneChildren />,
       },
       {
         label: `ข้อมูลผู้ป่วยรายใหม่`,
