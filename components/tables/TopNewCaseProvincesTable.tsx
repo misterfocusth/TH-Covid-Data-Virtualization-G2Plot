@@ -1,14 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
-import type { InputRef } from "antd";
-import { Button, Input, Space, Table } from "antd";
-import type { ColumnsType, ColumnType } from "antd/es/table";
-import type { FilterConfirmProps } from "antd/es/table/interface";
+import React, { useEffect, useState } from "react";
 
 // Redux
 import { useSelector } from "react-redux";
 import { AppState } from "../../store";
-import { setCurrentPage } from "../../slices/pageSlice";
 
 export const TopNewCaseProvincesTable: React.FC<{ data: any[] }> = ({ data }) => {
   const provincesData = useSelector((state: AppState) => state.covidData.provincesData);
