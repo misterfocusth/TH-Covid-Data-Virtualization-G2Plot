@@ -24,6 +24,7 @@ const TabOneChildren: React.FC = () => {
   const [filteredtimelineData, setFilteredTimelineData] = useState<any[]>([]);
   const [filteredTimelineProvincesData, setFilteredTimelineProvincesData] = useState<any[]>([]);
   const [selectedWeekRange, setSelectedWeekRange] = useState<number>(11); // Default: 12 Weeks
+  const [newCaseChartData, setNewCaseChartData] = useState<number[]>([]);
 
   // Charts State
   const [chartsData, setChartsData] = useState<ChartsData>({
@@ -44,8 +45,8 @@ const TabOneChildren: React.FC = () => {
   };
 
   const setDataRange = (weekRange: number = 11) => {
-    const x = timelineData?.slice();
-    x?.sort().reverse().slice(0, weekRange);
+    let _timelineData = timelineData?.slice();
+    _timelineData = _timelineData!.sort().reverse().slice(0, weekRange).reverse();
 
     const y = timelineProvincesData?.slice();
     y?.sort()
@@ -65,25 +66,20 @@ const TabOneChildren: React.FC = () => {
       total_recovered: [],
     };
 
-    console.log(x);
-
-    for (let z = 0; z <= weekRange; z++) {
-      tempChartsData.new_case_excludeabroad.push(x![z].new_case_excludeabroad);
-      tempChartsData.case_foreign.push(x![z].case_foreign);
-      tempChartsData.case_prison.push(x![z].case_prison);
-      tempChartsData.case_walkin.push(x![z].case_walkin);
-      tempChartsData.total_case.push(x![z].total_case);
-      tempChartsData.new_recovered.push(x![z].new_recovered);
-      tempChartsData.total_recovered.push(x![z].total_recovered);
-    }
-
-    for (let y = weekRange; y >= 0; y--) {
-      tempChartsData.weeknum.push("สัปดาห์ที่ " + x![y].weeknum);
+    for (let z = 0; z <= weekRange - 1; z++) {
+      tempChartsData.weeknum.push("สัปดาห์ที่ " + _timelineData![z].weeknum);
+      tempChartsData.new_case_excludeabroad.push(_timelineData![z].new_case_excludeabroad);
+      tempChartsData.case_foreign.push(_timelineData![z].case_foreign);
+      tempChartsData.case_prison.push(_timelineData![z].case_prison);
+      tempChartsData.case_walkin.push(_timelineData![z].case_walkin);
+      tempChartsData.total_case.push(_timelineData![z].total_case);
+      tempChartsData.new_recovered.push(_timelineData![z].new_recovered);
+      tempChartsData.total_recovered.push(_timelineData![z].total_recovered);
     }
 
     setSelectedWeekRange(weekRange);
     setChartsData(tempChartsData);
-    setFilteredTimelineData(x!);
+    setFilteredTimelineData(_timelineData!);
     setFilteredTimelineProvincesData(y!);
   };
 
@@ -133,13 +129,13 @@ const TabOneChildren: React.FC = () => {
                   curve: "smooth",
                 },
                 xaxis: {
-                  categories: chartsData.weeknum.reverse(),
+                  categories: chartsData.weeknum,
                 },
               }}
               series={[
                 {
                   name: "จำนวนผู้ป่วยรายใหม่ (ในประเทศ)",
-                  data: chartsData.case_walkin.sort().reverse(),
+                  data: chartsData.case_walkin,
                   color: "red",
                 },
               ]}
