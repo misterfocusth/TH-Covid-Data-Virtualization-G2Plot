@@ -17,13 +17,13 @@ import {
   setSelectedWeekRange,
   setTimelineProvincesData,
 } from "../../slices/covidDataSlice";
-import TopNewCaseProvincesTable from "../../components/tables/TopNewCaseProvincesTable";
+import { TopNewCaseProvincesTable } from "../../components/tables/TopNewCaseProvincesTable";
 
 const HomePage: React.FC = () => {
   const [isLoading, _setIsLoading] = useState<boolean>(true);
   const [weekData, _setWeekData] = useState<any[]>([]);
   const [timelineData, _setTimelineData] = useState<any[]>([]);
-  const [probincesData, _setProvincesData] = useState<any[]>([]);
+  const [provincesData, _setProvincesData] = useState<any[]>([]);
 
   // Redux
   const dispatch = useDispatch();
@@ -191,19 +191,23 @@ const HomePage: React.FC = () => {
       </div>
 
       <div className="p-2 mt-2">
-        <p className="font-bold text-lg">
-          จังหวัดในประเทศไทยที่มีผู้ป่วยรายใหม่ / สะสมสูงที่สุด (ประจำสัปดาห์)
-        </p>
-
-        <div className="mt-2 p-4 border border-gray-200 rounded-lg shadow-md">
-          <TopNewCaseProvincesTable />
+        <div className="">
+          <TopNewCaseProvincesTable data={provincesData} />
         </div>
 
-        <p className="underline mt-4 text-center">กดเพื่อไปหน้าดูข้อมูลแบบแยกตามจังหวัด {">>"}</p>
+        <p className="underline mt-4 text-center text-sm">
+          กดเพื่อไปหน้าดูข้อมูลแบบแยกตามจังหวัด {">>"}
+        </p>
       </div>
 
       <div className="p-2 mt-2">
-        <p className="font-bold text-lg">ชาร์ตสถิติข้อมูลย้อนหลังรายสัปดาห์</p>
+        <p className="mb-1 text-lg font-bold text-left text-gray-900 bg-whites">
+          ชาร์ตสถิติข้อมูลย้อนหลังรายสัปดาห์
+          <p className="mt-1 text-sm font-normal text-gray-500">
+            ข้อมูลภาพรวมแนวโน้มสถานการณ์ย้อนหลังรายสัปดาห์ ไม่ว่าจะเป็นข้อมูลผู้ป่วยรายใหม่
+            ผู้หายป่วยรายใหม่ และผู้เสียชีวิต ตั้งแตวันที่ 1 มกราคม 2565 - ปัจจุบัน
+          </p>
+        </p>
         <HomePageTabs />
       </div>
     </div>

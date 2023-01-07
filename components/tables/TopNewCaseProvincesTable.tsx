@@ -1,195 +1,73 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { ColumnsType, ColumnType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
-import Highlighter from "react-highlight-words";
 
-interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-}
+// Redux
+import { useSelector } from "react-redux";
+import { AppState } from "../../store";
+import { setCurrentPage } from "../../slices/pageSlice";
 
-type DataIndex = keyof DataType;
+export const TopNewCaseProvincesTable: React.FC<{ data: any[] }> = ({ data }) => {
+  const provincesData = useSelector((state: AppState) => state.covidData.provincesData);
+  const [sortedProvincesData, setSortedProvincesData] = useState<any[] | null>([]);
 
-const data: DataType[] = [
-  {
-    key: "1",
-    name: "กรุงเทพมหานคร",
-    age: 5184000,
-    address: "2000",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-];
+  useEffect(() => {
+    function sortProvincesData() {
+      const x = provincesData!.slice();
+      x!.sort((a, b) => b.new_case - a.new_case);
+      setSortedProvincesData(x!.slice(1, 11));
+    }
 
-const TopNewCaseProvincesTable: React.FC = () => {
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
+    sortProvincesData();
+  }, []);
 
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: DataIndex
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
+  const formatNumber = (number: number) => {
+    return number.toLocaleString(undefined, { maximumFractionDigits: 0 });
   };
 
-  const handleReset = (clearFilters: () => void) => {
-    clearFilters();
-    setSearchText("");
-  };
+  return (
+    <div className="relative overflow-x-auto">
+      <table className="w-full text-sm text-left text-gray-500">
+        <caption className="mb-5 text-lg font-bold text-left text-gray-900 bg-whites">
+          สถิติผู้ป่วยรายใหม่ประจำจังหวัด (รายสัปดาห์)
+          <p className="mt-1 text-sm font-normal text-gray-500">
+            จังหวัดในประเทศไทยที่มีอัตราผู้ป่วยรายใหม่และผู้ป่วยสะสมมากที่สุด 10
+            อันดับแรกประจำอาทิตย์นี้
+          </p>
+        </caption>
+        <thead className="text-gray-700 bg-gray-50">
+          <tr>
+            <th scope="col" className="px-0 py-2">
+              อันดับ
+            </th>
+            <th scope="col" className="px-2 py-2">
+              จังหวัด
+            </th>
+            <th scope="col" className="px-2 py-2">
+              ผู้ป่วยรายใหม่
+            </th>
+            <th scope="col" className="px-2 py-2">
+              ผู้ป่วยสะสม
+            </th>
+          </tr>
+        </thead>
 
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<DataType> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
-  });
-
-  const columns: ColumnsType<DataType> = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      width: "20%",
-      ...getColumnSearchProps("name"),
-    },
-    {
-      title: "ผู้ป่วยรายใหม่",
-      dataIndex: "age",
-      key: "age",
-      width: "35%",
-      ...getColumnSearchProps("age"),
-    },
-    {
-      title: "ผู้ป่วยสะสม",
-      dataIndex: "address",
-      key: "address",
-      width: "35%",
-      ...getColumnSearchProps("address"),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortDirections: ["descend", "ascend"],
-    },
-  ];
-
-  return <Table columns={columns} dataSource={data} size="small" />;
+        <tbody>
+          {sortedProvincesData?.map((data, index) => (
+            <tr className="bg-white border-b" key={index}>
+              <td className="px-2 py-2">{index + 1}</td>
+              <th scope="row" className="px-2 py-2 font-medium text-gray-900 whitespace-nowrap">
+                {data.province}
+              </th>
+              <td className="px-2 py-2 text-red-600 font-bold">{formatNumber(data.new_case)}</td>
+              <td className="px-2 py-2">{formatNumber(data.total_case)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
-
-export default TopNewCaseProvincesTable;

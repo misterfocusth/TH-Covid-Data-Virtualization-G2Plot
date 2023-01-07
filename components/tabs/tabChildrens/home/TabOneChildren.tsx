@@ -65,8 +65,9 @@ const TabOneChildren: React.FC = () => {
       total_recovered: [],
     };
 
+    console.log(x);
+
     for (let z = 0; z <= weekRange; z++) {
-      tempChartsData.weeknum.push("สัปดาห์ที่ " + x![z].weeknum);
       tempChartsData.new_case_excludeabroad.push(x![z].new_case_excludeabroad);
       tempChartsData.case_foreign.push(x![z].case_foreign);
       tempChartsData.case_prison.push(x![z].case_prison);
@@ -74,6 +75,10 @@ const TabOneChildren: React.FC = () => {
       tempChartsData.total_case.push(x![z].total_case);
       tempChartsData.new_recovered.push(x![z].new_recovered);
       tempChartsData.total_recovered.push(x![z].total_recovered);
+    }
+
+    for (let y = weekRange; y >= 0; y--) {
+      tempChartsData.weeknum.push("สัปดาห์ที่ " + x![y].weeknum);
     }
 
     setSelectedWeekRange(weekRange);
@@ -128,13 +133,13 @@ const TabOneChildren: React.FC = () => {
                   curve: "smooth",
                 },
                 xaxis: {
-                  categories: chartsData.weeknum,
+                  categories: chartsData.weeknum.reverse(),
                 },
               }}
               series={[
                 {
                   name: "จำนวนผู้ป่วยรายใหม่ (ในประเทศ)",
-                  data: chartsData.case_walkin,
+                  data: chartsData.case_walkin.sort().reverse(),
                   color: "red",
                 },
               ]}
